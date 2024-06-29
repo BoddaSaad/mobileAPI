@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class ItemsResource extends JsonResource
 {
@@ -14,8 +16,13 @@ class ItemsResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $favoriteSatus = false;
+        $favorite = Favorite::where('user_id', Auth::id())->where('item_id', $this->id)->first();
+        if($favorite){
+            $favoriteSatus = true;
+        }
         return [
-            "id" => (string) $this->id,
+            "id" => $this->id,
             "name" => $this->name,
             "nameAr" => $this->name_ar,
             "description" => $this->description,
@@ -27,7 +34,8 @@ class ItemsResource extends JsonResource
             "phone" => $this->phone,
             "createdAt" => $this->created_at,
             "category" => new CategoriesResource($this->category),
-            "images" => GalleryResource::collection($this->images)
+            "images" => GalleryResource::collection($this->images),
+            "favorite" => $favoriteSatus
         ];
     }
 }

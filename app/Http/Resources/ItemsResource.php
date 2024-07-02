@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Favorite;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ class ItemsResource extends JsonResource
         if($favorite){
             $favoriteSatus = true;
         }
+        $rating = Rating::where('item_id', $this->id)->avg('rating');
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -35,7 +37,8 @@ class ItemsResource extends JsonResource
             "createdAt" => $this->created_at,
             "category" => new CategoriesResource($this->category),
             "images" => GalleryResource::collection($this->images),
-            "favorite" => $favoriteSatus
+            "favorite" => $favoriteSatus,
+            "rating" => $rating
         ];
     }
 }

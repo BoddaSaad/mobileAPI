@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,4 +37,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/schedule', [BookingsController::class, 'get_available_hours']);
     Route::post('/booking', [BookingsController::class, 'booking']);
     Route::post('/user/bookings', [BookingsController::class, 'my_booking']);
+    Route::post('/rate', [RatingController::class, 'rate']);
+    Route::post('/ratings', [RatingController::class, 'show_ratings']);
 });

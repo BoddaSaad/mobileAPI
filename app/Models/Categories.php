@@ -14,4 +14,8 @@ class Categories extends Model
         'name',
         'name_ar',
     ];
+
+    public function items(){
+        return $this->hasMany(Item::class, 'category_id');
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookingsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ItemsController;
 use Illuminate\Http\Request;
@@ -27,7 +28,12 @@ Route::put('/reset', [AuthController::class, 'reset_password']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/categories', [CategoriesController::class, 'index']);
+    Route::post('/categories/{id}', [CategoriesController::class, 'show']);
     Route::post('/items', [ItemsController::class, 'index']);
+    Route::post('/items/{item}', [ItemsController::class, 'show']);
     Route::post('/favorites', [ItemsController::class, 'favorites']);
     Route::post('/favorites/add', [ItemsController::class, 'add_favorite']);
+    Route::post('/schedule', [BookingsController::class, 'get_available_hours']);
+    Route::post('/booking', [BookingsController::class, 'booking']);
+    Route::post('/user/bookings', [BookingsController::class, 'my_booking']);
 });

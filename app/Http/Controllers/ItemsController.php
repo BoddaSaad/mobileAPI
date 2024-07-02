@@ -25,6 +25,10 @@ class ItemsController extends Controller
         return ItemsResource::collection($items);
     }
 
+    public function show(Item $item){
+        return new ItemsResource($item);
+    }
+
     public function favorites(){
         $item_ids = Auth::user()->favorites()->pluck('item_id');
         return ItemsResource::collection(Item::whereIn('id',$item_ids)->with("category")->paginate(2));

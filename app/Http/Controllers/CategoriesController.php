@@ -15,8 +15,8 @@ class CategoriesController extends Controller
         );
     }
 
-    public function show($id){
-        $items = Categories::with('items')->findOrFail($id);
+    public function show(Request $request){
+        $items = Categories::with('items')->findOrFail($request->category);
         return ItemsResource::collection($items->items);
     }
 }

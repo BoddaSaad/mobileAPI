@@ -25,7 +25,8 @@ class ItemsController extends Controller
         return ItemsResource::collection($items);
     }
 
-    public function show(Item $item){
+    public function show(Request $request){
+        $item = Item::findOrFail($request->item);
         return new ItemsResource($item);
     }
 
@@ -44,6 +45,11 @@ class ItemsController extends Controller
         ]);
 
         return response()->json(['message'=> 'Item has been added successfully to favorites']);
+    }
+
+    public function delete_favorite(Request $request){
+        Favorite::where('item_id', $request->item_id)->where('user_id', Auth::user()->id)->delete();
+        return response()->json(['message'=> 'Item has been removed successfully from favorites']);
     }
 
     // TODO change the pagination limit to a proper value

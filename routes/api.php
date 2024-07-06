@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/favorites', [ItemsController::class, 'favorites']);
     Route::post('/favorites/add', [ItemsController::class, 'add_favorite']);
     Route::post('/favorites/delete', [ItemsController::class, 'delete_favorite']);
+    Route::post('/favorites/delete/all', [ItemsController::class, 'delete_all_favorites']);
     Route::post('/schedule', [BookingsController::class, 'get_available_hours']);
     Route::post('/booking', [BookingsController::class, 'booking']);
     Route::post('/user/bookings', [BookingsController::class, 'my_booking']);

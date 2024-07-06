@@ -52,5 +52,10 @@ class ItemsController extends Controller
         return response()->json(['message'=> 'Item has been removed successfully from favorites']);
     }
 
+    public function delete_all_favorites(Request $request){
+        Favorite::where('user_id', Auth::user()->id)->delete();
+        return response()->json(['message'=> 'All Items have been removed successfully from favorites']);
+    }
+
     // TODO change the pagination limit to a proper value
 }

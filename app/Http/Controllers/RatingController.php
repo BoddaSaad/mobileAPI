@@ -15,7 +15,7 @@ class RatingController extends Controller
             'review'=> $request->review ?? null,
             'rating'=> $request->rating
         ]);
-        return response()->json('Rating has been successfully created.');
+        return response()->json(['message'=>'Rating has been successfully created.']);
     }
 
     public function show_ratings(Request $request){

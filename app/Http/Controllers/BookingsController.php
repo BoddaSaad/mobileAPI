@@ -40,7 +40,7 @@ class BookingsController extends Controller
 
             $availableHours = array_merge($availableHours, $slots);
         }
-        return response()->json($availableHours);
+        return response()->json(['hours'=> $availableHours]);
     }
 
     public function booking(Request $request){
@@ -57,7 +57,7 @@ class BookingsController extends Controller
                 'reference'=> random_int(1000, 99999)
             ]);
         }
-        return response()->json('Booking has been completed successfully');
+        return response()->json(['message'=>'Booking has been completed successfully']);
     }
 
     public function my_booking()

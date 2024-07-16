@@ -20,4 +20,8 @@ class Item extends Model
     public function category(){
         return $this->belongsTo(Categories::class, 'category_id');
     }
+
+    public function subitems(){
+        return $this->hasMany(Subitem::class);
+    }
 }

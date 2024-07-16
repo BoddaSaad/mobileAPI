@@ -11,7 +11,7 @@ class Booking extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['item_id', 'user_id', 'date', 'start_time', 'end_time', 'reference'];
+    protected $fillable = ['subitem_id', 'user_id', 'date', 'start_time', 'end_time', 'reference'];
 
     public function item()
     {

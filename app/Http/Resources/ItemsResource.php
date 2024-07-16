@@ -38,7 +38,8 @@ class ItemsResource extends JsonResource
             "category" => new CategoriesResource($this->category),
             "images" => GalleryResource::collection($this->images),
             "favorite" => $favoriteSatus,
-            "rating" => $rating
+            "rating" => $rating,
+            "subitems"=> $this->subitems
         ];
     }
 }

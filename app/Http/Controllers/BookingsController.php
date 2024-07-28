@@ -18,7 +18,7 @@ class BookingsController extends Controller
         $end_time = strtotime("24:00:00");
         $slots = [];
         while ($start_time < $end_time) {
-            $slot_start_time = date('H:i:s', $start_time);
+            $slot_start_time = date('h:i A', $start_time);
             $slot_end_time = date('H:i:s', strtotime('+1 hour', $start_time));
             $is_available = true;
             foreach ($bookings as $appointment) {
@@ -44,8 +44,11 @@ class BookingsController extends Controller
     public function booking(Request $request){
         $user_id = Auth::user()->id;
         foreach($request->hours as $hour) {
-            $start_time = strtotime($hour);
+            $start_time = strtotime(date('H:i:s', strtotime($hour)));
             $end_time = strtotime('+1 hour', $start_time);
+            if(Booking::where("date", $request->date)->where("start_time", date('H:i:s', $start_time))->exists()){
+                continue;
+            }
             Booking::create([
                 'subitem_id'=> $request->subitem_id,
                 'user_id'=> $user_id,

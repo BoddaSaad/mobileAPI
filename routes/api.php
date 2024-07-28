@@ -5,6 +5,7 @@ use App\Http\Controllers\BookingsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,4 +42,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/bookings', [BookingsController::class, 'my_booking']);
     Route::post('/rate', [RatingController::class, 'rate']);
     Route::post('/ratings', [RatingController::class, 'show_ratings']);
+    Route::post('/profile', [UserController::class, 'update']);
 });

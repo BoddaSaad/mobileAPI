@@ -12,16 +12,11 @@ class ItemsController extends Controller
 {
     public function index(Request $request){
         $query = $request->search ?? "";
-        $words = explode(' ',$query);
-        $items = Item::with('category')->where(function ($q) use ($words) {
-            foreach ($words as $value) {
-                $q->orWhere([
-                    ['name', 'like', "%{$value}%"],
-                ])->orWhere([
-                    ['name_ar', 'like', "%{$value}%"],
-                ]);
-            }
-        })->orderBy('id','DESC')->get();
+        $items = Item::with('category')
+            ->where("name", 'like', "%{$query}%")
+            ->orWhere("name_ar", 'like', "%{$query}%")
+            ->orderByDesc("id")
+            ->get();
         return ItemsResource::collection($items);
     }
 

@@ -43,4 +43,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/rate', [RatingController::class, 'rate']);
     Route::post('/ratings', [RatingController::class, 'show_ratings']);
     Route::post('/profile', [UserController::class, 'update']);
+    Route::post('/profile/delete', [UserController::class, 'delete_account']);
 });

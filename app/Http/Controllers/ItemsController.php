@@ -7,15 +7,19 @@ use App\Models\Favorite;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ItemsController extends Controller
 {
     public function index(Request $request){
         $query = $request->search ?? "";
-        $items = Item::with('category')
+        $sort = $request->sort ?? "id";
+        $order = $request->order ?? "desc";
+        $items = Item::withAvg('ratings as rate', 'rating')->with('category')
+            ->select('*', DB::raw('(items.discount / items.price) * 100 as offer'))
             ->where("name", 'like', "%{$query}%")
             ->orWhere("name_ar", 'like', "%{$query}%")
-            ->orderByDesc("id")
+            ->orderBy($sort, $order)
             ->get();
         return ItemsResource::collection($items);
     }

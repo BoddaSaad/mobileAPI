@@ -22,7 +22,6 @@ class ItemsResource extends JsonResource
         if($favorite){
             $favoriteSatus = true;
         }
-        $rating = Rating::where('item_id', $this->id)->avg('rating');
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -38,7 +37,8 @@ class ItemsResource extends JsonResource
             "category" => new CategoriesResource($this->category),
             "images" => GalleryResource::collection($this->images),
             "favorite" => $favoriteSatus,
-            "rating" => $rating,
+            "rating" => $this->rate,
+            "offer" => $this->offer,
             "subitems"=> $this->subitems
         ];
     }

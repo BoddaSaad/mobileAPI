@@ -8,6 +8,8 @@ use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
@@ -17,6 +19,28 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->save();
         return response()->json(['message'=>'Name has been changed successfully.']);
+    }
+
+    public function update_photo(Request $request){
+        $validator = Validator::make($request->all(), [
+            'photo' => 'required|image|mimes:jpeg,png,jpg',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' =>"Validation Error.",
+                'errors' => $validator->errors()
+            ], 400);
+        }
+        $file = $request->file('photo');
+        $path = $file->store('uploads', 'public');
+        $user = Auth::user();
+        $user->photo = $path;
+        $user->save();
+        return response()->json([
+            'message' => 'Picture has been uploaded successfully.',
+            'photo' => config('app.url') . Storage::url($path)
+        ], 200);
     }
 
     public function delete_account(Request $request){

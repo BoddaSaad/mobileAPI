@@ -31,7 +31,7 @@ class ItemsController extends Controller
 
     public function favorites(){
         $item_ids = Auth::user()->favorites()->pluck('item_id');
-        return ItemsResource::collection(Item::whereIn('id',$item_ids)->with("category")->paginate(2));
+        return ItemsResource::collection(Item::whereIn('id',$item_ids)->with("category")->get());
     }
 
     public function add_favorite(Request $request){

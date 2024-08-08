@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -46,3 +47,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/photo', [UserController::class, 'update_photo']);
     Route::post('/profile/delete', [UserController::class, 'delete_account']);
 });
+
+Route::post('/callback', [OrderController::class, 'handle']);

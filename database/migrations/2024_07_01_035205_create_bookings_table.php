@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('subitem_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->time('start_time');
             $table->time('end_time');
             $table->enum('created_by', ['user', 'moderator'])->default('user');
-            $table->string('reference');
         });
     }
 

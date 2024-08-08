@@ -3,16 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Item;
+use App\Models\Order;
 use App\Models\Schedule;
+use App\Services\PaymobService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class BookingsController extends Controller
 {
+    protected $paymobService;
+
+    public function __construct(PaymobService $paymobService)
+    {
+        $this->paymobService = $paymobService;
+    }
+
     public function get_available_hours(Request $request){
-        $dayOfWeek = date('l', strtotime($request->date));
-        //$schedules = Schedule::where('item_id', $request->item)->where('day', $dayOfWeek)->get();
-        $bookings = Booking::where('subitem_id', $request->subitem)->where('date', $request->date)->get();
+        $bookings = Booking::where('subitem_id', $request->subitem)->where('date', $request->date)->whereRelation('order', 'status', 'Paid')->get();
         $availableHours = [];
         $start_time = strtotime("00:00:00");
         $end_time = strtotime("24:00:00");
@@ -42,23 +52,42 @@ class BookingsController extends Controller
     }
 
     public function booking(Request $request){
-        $user_id = Auth::user()->id;
+        $user = Auth::user();
+        $item = Item::whereHas('subitems', function (Builder $query) use ($request) {
+            $query->where('id', $request->subitem_id);
+        })->first();
+        $price = $item->price - $item->discount;
+        $total_price_cents = $price * count($request->hours) * 100;
+
+        $order = Order::create([
+            'reference'=> random_int(1000, 99999),
+            'status'=> "Awaiting Payment",
+            'price' => $total_price_cents,
+        ]);
+
         foreach($request->hours as $hour) {
             $start_time = strtotime(date('H:i:s', strtotime($hour)));
             $end_time = strtotime('+1 hour', $start_time);
             if(Booking::where("date", $request->date)->where("start_time", date('H:i:s', $start_time))->exists()){
                 continue;
             }
+
             Booking::create([
                 'subitem_id'=> $request->subitem_id,
-                'user_id'=> $user_id,
+                'user_id'=> $user->id,
+                'order_id'=> $order->id,
                 'date'=> $request->date,
                 'start_time'=> date('H:i:s', $start_time),
-                'end_time'=> date('H:i:s', $end_time),
-                'reference'=> random_int(1000, 99999)
+                'end_time'=> date('H:i:s', $end_time)
             ]);
         }
-        return response()->json(['message'=>'Booking has been completed successfully']);
+
+        $response = $this->paymobService->intent($total_price_cents, $order->reference);
+        $order->update(['transaction'=>$response['id']]);
+        return response()->json([
+            'message'=>'Redirect the user to this url',
+            'url'=>'https://accept.paymob.com/unifiedcheckout/?publicKey='.config('paymob.public_key').'&clientSecret='.$response['client_secret']
+        ]);
     }
 
     public function my_booking()

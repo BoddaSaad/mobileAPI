@@ -11,10 +11,14 @@ class Booking extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['subitem_id', 'user_id', 'date', 'start_time', 'end_time', 'reference'];
+    protected $fillable = ['subitem_id', 'user_id', 'order_id', 'date', 'start_time', 'end_time'];
 
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function order(){
+        return $this->belongsTo(Order::class);
     }
 }

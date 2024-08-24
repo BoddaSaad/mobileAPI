@@ -43,6 +43,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'User registered successfully',
             'user' => $user,
+            'version'=> config('app.version'),
             'token' => $user->createToken("API Token of {$user->email}")->plainTextToken
         ], 201);
     }
@@ -83,6 +84,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'User authenticated successfully',
             'user' => $user,
+            'version'=> config('app.version'),
             'token' => $user->createToken("API Token of {$user->email}")->plainTextToken
         ], 200);
 

@@ -22,7 +22,7 @@ class BookingsController extends Controller
     }
 
     public function get_available_hours(Request $request){
-        $bookings = Booking::where('subitem_id', $request->subitem)->where('date', $request->date)->whereRelation('order', 'status', 'Paid')->get();
+        $bookings = Booking::where('subitem_id', $request->subitem)->where('date', $request->date)->whereRelation('order', 'status', 'Paid')->orWhereRelation('order', 'created_at', '>=', now()->subMinutes(10))->get();
         $availableHours = [];
         $start_time = strtotime("00:00:00");
         $end_time = strtotime("24:00:00");

@@ -23,7 +23,6 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            // 'verifyCode' => random_int(10000, 99999)
         ]);
 
         $otp = Otp::firstOrCreate([
@@ -76,11 +75,27 @@ class AuthController extends Controller
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
+
         if(!$user->hasVerifiedEmail()){
+            $otp = Otp::firstOrCreate([
+                'email'=> $request->email,
+                'usage'=> 0,
+                'used'=> 0
+            ],[
+                'otp'=> random_int(10000, 99999),
+                'email'=> $request->email,
+                'usage'=> 0,
+            ]);
+
+            Mail::to($user)->send(new VerificationCode(
+                $otp->otp, "Use this verification code to verify your email"
+            ));
+
             return response()->json([
-                'message'=>'This Email is not verified yet'
+                'message'=>'This Email is not verified yet, We\'ve sent a OTP to you'
             ], 403);
         }
+
         return response()->json([
             'message' => 'User authenticated successfully',
             'user' => $user,

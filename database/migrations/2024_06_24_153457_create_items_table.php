@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer("discount")->default(0);
             $table->integer("price");
             $table->string("location");
+            $table->string("location_ar");
             $table->string("location_link");
             $table->string("phone");
             $table->foreignId('category_id')->constrained(table: 'categories');

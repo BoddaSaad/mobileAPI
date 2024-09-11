@@ -31,6 +31,7 @@ class ItemsResource extends JsonResource
             "discount" => $this->discount,
             "price" => $this->price,
             "location" => $this->location,
+            "locationAr" => $this->location_ar,
             "location_link" => $this->location_link,
             "phone" => $this->phone,
             "createdAt" => $this->created_at,

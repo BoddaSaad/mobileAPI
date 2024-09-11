@@ -13,9 +13,9 @@ class Booking extends Model
 
     protected $fillable = ['subitem_id', 'user_id', 'order_id', 'date', 'start_time', 'end_time'];
 
-    public function item()
+    public function subitem()
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Subitem::class);
     }
 
     public function order(){

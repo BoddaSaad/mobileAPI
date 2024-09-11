@@ -41,10 +41,11 @@ class BookingsController extends Controller
                     break;
                 }
             }
-            if ($is_available) {
-                $slots[] = $slot_start_time;
-            }
             $start_time = strtotime('+1 hour', $start_time);
+
+            if ($is_available) {
+                $slots[] = $slot_start_time ." - ". date('h:i A', $start_time);
+            }
         }
 
         $availableHours = array_merge($availableHours, $slots);
@@ -93,7 +94,9 @@ class BookingsController extends Controller
     public function my_booking()
     {
         $user_id = Auth::user()->id;
-        $bookings = Booking::where('user_id', $user_id)->with('item')->get();
+        $bookings = Booking::where('user_id', $user_id)->with(['subitem' => function ($q) {
+            $q->with('item');
+        }])->get();
         return response()->json($bookings);
     }
 }

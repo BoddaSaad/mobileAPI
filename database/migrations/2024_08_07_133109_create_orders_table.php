@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('reference');
             $table->string('transaction')->nullable();
             $table->string('status')->nullable();
+            $table->string('voucher')->nullable();
             $table->decimal('price', total: 8, places: 2)->comment("Price in cents");
+            $table->decimal('final_price', total: 8, places: 2)->comment("Final price in cents");
             $table->timestamps();
         });
     }

@@ -6,9 +6,11 @@ use App\Models\Booking;
 use App\Models\Item;
 use App\Models\Order;
 use App\Models\Schedule;
+use App\Models\Voucher;
 use App\Services\PaymobService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
@@ -58,12 +60,20 @@ class BookingsController extends Controller
             $query->where('id', $request->subitem_id);
         })->first();
         $price = $item->price - $item->discount;
+        $total_price = $price * count($request->hours);
         $total_price_cents = $price * count($request->hours) * 100;
 
+        if($request->voucher){
+            $total_price = $this->voucher_calculation($request->voucher, $total_price);
+        }
+
         $order = Order::create([
+            'user_id'=> $user->id,
             'reference'=> random_int(1000, 99999),
-            'status'=> "Awaiting Payment",
+            'status'=> $total_price === 0 ? "Paid" : "Awaiting Payment",
             'price' => $total_price_cents,
+            'final_price' => $total_price * 100,
+            'voucher'=> $request->voucher ?? null
         ]);
 
         foreach($request->hours as $hour) {
@@ -83,12 +93,36 @@ class BookingsController extends Controller
             ]);
         }
 
-        $response = $this->paymobService->intent($total_price_cents, $order->reference);
+        if($total_price === 0){
+            return response()->json([
+                'message'=>'Your booking has been successfully completed.',
+            ]);
+        }
+
+        $response = $this->paymobService->intent($total_price * 100, $order->reference);
         $order->update(['transaction'=>$response['id']]);
         return response()->json([
             'message'=>'Redirect the user to this url',
             'url'=>'https://accept.paymob.com/unifiedcheckout/?publicKey='.config('paymob.public_key').'&clientSecret='.$response['client_secret']
         ]);
+    }
+
+    protected function voucher_calculation($code, $total_price){
+        $voucher = Voucher::where("code", $code)->first();
+        $usageOfVoucher = Auth()->user()->orders->where('voucher', $code)->count();
+        if(!$voucher || $usageOfVoucher === $voucher->upc || $voucher->quantity === $voucher->used || $voucher->expired || $voucher->expire_date < Carbon::now()){
+            return $total_price;
+        }
+
+        if($voucher->fixed_discount){
+            $final_price = $total_price - $voucher->fixed_discount;
+        } else {
+            $final_price = $total_price - ($total_price * $voucher->percent_discount);
+        }
+
+        $voucher->used++;
+        $voucher->save();
+        return max(0, $final_price);
     }
 
     public function my_booking()

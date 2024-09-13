@@ -7,6 +7,7 @@ use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/favorites/delete/all', [ItemsController::class, 'delete_all_favorites']);
     Route::post('/schedule', [BookingsController::class, 'get_available_hours']);
     Route::post('/booking', [BookingsController::class, 'booking']);
+    Route::post('/voucher', [VoucherController::class, 'check_availability']);
     Route::post('/user/bookings', [BookingsController::class, 'my_booking']);
     Route::post('/rate', [RatingController::class, 'rate']);
     Route::post('/ratings', [RatingController::class, 'show_ratings']);

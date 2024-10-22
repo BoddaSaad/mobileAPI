@@ -131,6 +131,8 @@ class BookingsController extends Controller
         $bookings = Booking::where('user_id', $user_id)->with(['subitem' => function ($q) {
             $q->with('item');
         }])->get();
-        return response()->json($bookings);
+        return response()->json([
+            "items" => $bookings
+        ]);
     }
 }
